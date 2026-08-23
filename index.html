@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>総まとめ N3 漢字 — Week 1 Flashcards</title>
+<style>
+:root{--bg:#0b0d12;--surface:#141821;--surface2:#1b202c;--text:#f5f7fb;--muted:#9aa3b2;--line:#292f3c;--accent:#c9a7ff;--good:#82e0a8;--bad:#ff8d9b}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#222033 0,#0b0d12 45%);color:var(--text);font-family:Inter,"Noto Sans Myanmar",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1050px;margin:auto;padding:24px 18px 50px}
+header{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap}
+h1{font-size:22px;margin:0} .sub{color:var(--muted);font-size:13px;margin-top:4px}
+select,button{font:inherit;color:var(--text);background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}
+button:hover,select:hover{border-color:#514968} button.primary{background:var(--accent);color:#15111c;border-color:transparent;font-weight:700}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:18px}
+.stat{padding:7px 10px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.card{background:linear-gradient(145deg,#171b25,#11151d);border:1px solid var(--line);border-radius:24px;min-height:470px;padding:28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;box-shadow:0 20px 60px #0005}
+.day{color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.04em}
+.kanji{font-size:110px;line-height:1.1;margin:18px 0 6px;font-family:"Noto Sans JP","Yu Gothic",serif}
+.reading{font-size:18px;color:#ddd6f2;min-height:28px}
+.prompt{color:var(--muted);margin-top:20px;font-size:14px}
+.answer{width:min(760px,100%);margin-top:18px;text-align:left}
+.readingBox{background:#0c1017;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0 14px;display:flex;gap:22px;flex-wrap:wrap}
+.readingBox>div{display:flex;flex-direction:column;gap:3px;min-width:150px}
+.readingBox b{color:var(--muted);font-size:12px}
+.readingBox span{font-size:18px;color:#ddd6f2}
+.vocab{background:#0c1017;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.jp{font-size:19px;font-weight:700} .romaji{color:var(--muted);font-size:13px;margin-left:7px} .my{margin-top:4px;line-height:1.6}
+.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:18px 0}
+.progress{height:7px;background:#202532;border-radius:99px;overflow:hidden;margin:12px 0 22px}
+.progress i{display:block;height:100%;background:var(--accent);width:0}
+.hint{color:var(--muted);font-size:12px;text-align:center;margin-top:12px}
+kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;background:#161a23}
+.hidden{display:none} .score-good{color:var(--good)} .score-bad{color:var(--bad)}
+@media(max-width:600px){.wrap{padding:16px 12px 35px}.card{min-height:430px;padding:20px 14px}.kanji{font-size:88px}h1{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div><h1>日本語総まとめ N3 漢字 — Week 1</h1><div class="sub">1日目〜7日目 · Burmese flashcards</div></div>
+<select id="day"></select>
+</header>
+<div class="toolbar">
+<button id="random">🔀 Random</button><button id="shuffle">🔄 Shuffle</button>
+<button id="reset">Reset progress</button>
+</div>
+<div class="stats"><div class="stat" id="pos"></div><div class="stat">Known: <span class="score-good" id="known">0</span></div><div class="stat">Need review: <span class="score-bad" id="review">0</span></div></div>
+<div class="progress"><i id="bar"></i></div>
+<section class="card">
+<div class="day" id="dayTitle"></div><div class="kanji" id="kanji"></div><div class="reading" id="reading"></div>
+<div class="prompt" id="prompt">Think of the readings and meanings, then reveal the answer.</div>
+<div class="answer hidden" id="answer"></div>
+</section>
+<div class="controls">
+<button id="prev">← Previous</button><button class="primary" id="reveal">Show answer</button><button id="next">Next →</button>
+<button id="know" class="hidden">✓ I know</button><button id="again" class="hidden">↻ Review again</button>
+</div>
+<div class="hint">Keyboard: <kbd>Space</kbd> reveal · <kbd>←</kbd>/<kbd>→</kbd> navigate · <kbd>K</kbd> known · <kbd>R</kbd> review</div>
+</div>
+<script>
+const DATA=[{"day":1,"title":"1日目","kanji":[{"k":"駐","r":"チュウ","v":[["駐車","ちゅうしゃ","ကားရပ်ခြင်း"],["駐車場","ちゅうしゃじょう","ကားရပ်ရန်နေရာ"]]},{"k":"無","r":"ム・な-い","v":[["無休","むきゅう","နားရက်မရှိ"],["無理な","むりな","မဖြစ်နိုင်သော / အလွန်အကျွံ"],["無料","むりょう","အခမဲ့"],["無い","ない","မရှိ"]]},{"k":"満","r":"マン","v":[["満車","まんしゃ","ကားနေရာပြည့်"],["不満な","ふまんな","မကျေနပ်သော"],["満員","まんいん","လူပြည့်"]]},{"k":"向","r":"コウ・む-こう・む-かう・む-き","v":[["方向","ほうこう","ဦးတည်ရာ / အရပ်"],["向かう","むかう","ဦးတည်သွားသည်"],["向こう","むこう","ဟိုဘက် / မျက်နှာချင်းဆိုင်ဘက်"],["○○向き","○○むき","○○အတွက် သင့်တော်သော"]]},{"k":"禁","r":"キン","v":[["禁止","きんし","တားမြစ်ခြင်း"]]},{"k":"関","r":"カン","v":[["関心","かんしん","စိတ်ဝင်စားမှု"],["関する","かんする","ပတ်သက်သည်"]]},{"k":"係","r":"ケイ・かかり","v":[["関係","かんけい","ဆက်နွယ်မှု / ဆက်ဆံရေး"],["係","かかり","တာဝန်ခံ"]]},{"k":"断","r":"ダン・ことわ-る","v":[["無断","むだん","ခွင့်ပြုချက်မရှိဘဲ"],["断る","ことわる","ငြင်းပယ်သည်"],["断水","だんすい","ရေပေးဝေမှု ဖြတ်တောက်ခြင်း"]]}]},{"day":2,"title":"2日目","kanji":[{"k":"横","r":"オウ・よこ","v":[["横断","おうだん","ဖြတ်ကူးခြင်း"],["横断歩道","おうだんほどう","လူကူးမျဉ်းကြား"],["横","よこ","ဘေး / အလျားလိုက်"]]},{"k":"押","r":"お-す・お-さえる","v":[["押す","おす","နှိပ်သည် / ဖိသည်"],["押さえる","おさえる","ဖိထားသည် / ထိန်းချုပ်သည်"],["押し入れ","おしいれ","နံရံကပ်ဗီဒို"]]},{"k":"式","r":"シキ","v":[["押しボタン式","おしボタンしき","ခလုတ်နှိပ်သည့်ပုံစံ"],["入学式","にゅうがくしき","ကျောင်းဝင်အခမ်းအနား"],["数式","すうしき","သင်္ချာဖော်မြူလာ"]]},{"k":"信","r":"シン","v":[["送信","そうしん","ပေးပို့ခြင်း"],["信じる","しんじる","ယုံကြည်သည်"],["自信","じしん","ကိုယ့်ကိုယ်ကို ယုံကြည်မှု"],["信用","しんよう","ယုံကြည်မှု"]]},{"k":"号","r":"ゴウ","v":[["信号","しんごう","မီးပွိုင့်"],["～号車","～ごうしゃ","ရထား/ကားအမှတ်"]]},{"k":"確","r":"カク・たし-か・たし-かめる","v":[["正確な","せいかくな","တိကျသော"],["確かな","たしかな","သေချာသော"],["確かめる","たしかめる","စစ်ဆေးအတည်ပြုသည်"]]},{"k":"認","r":"ニン・みと-める","v":[["確認","かくにん","အတည်ပြုခြင်း / စစ်ဆေးခြင်း"],["認める","みとめる","အသိအမှတ်ပြုသည်"]]},{"k":"飛","r":"ヒ・と-ぶ","v":[["飛行場","ひこうじょう","လေဆိပ် / လေယာဉ်ကွင်း"],["飛ぶ","とぶ","ပျံသည်"]]}]},{"day":3,"title":"3日目","kanji":[{"k":"非","r":"ヒ","v":[["非常","ひじょう","အရေးပေါ်"],["非常に","ひじょうに","အလွန်"],["非常口","ひじょうぐち","အရေးပေါ်ထွက်ပေါက်"]]},{"k":"常","r":"ジョウ","v":[["日常","にちじょう","နေ့စဉ်ဘဝ"],["正常な","せいじょうな","ပုံမှန်ဖြစ်သော"]]},{"k":"階","r":"カイ","v":[["～階","～かい","～ထပ်"]]},{"k":"段","r":"ダン","v":[["階段","かいだん","လှေကား"]]},{"k":"箱","r":"はこ","v":[["箱","はこ","သေတ္တာ / ဘူး"],["ごみ箱","ごみばこ","အမှိုက်ပုံး"]]},{"k":"危","r":"キ・あぶ-ない","v":[["危ない","あぶない","အန္တရာယ်ရှိသော"]]},{"k":"険","r":"ケン","v":[["危険な","きけんな","အန္တရာယ်ရှိသော"]]},{"k":"捨","r":"す-てる","v":[["捨てる","すてる","လွှင့်ပစ်သည်"]]}]},{"day":4,"title":"4日目","kanji":[{"k":"線","r":"セン","v":[["線","せん","မျဉ်း / ရထားလိုင်း"],["～番線","～ばんせん","ရထားစင်နံပါတ်"]]},{"k":"面","r":"メン","v":[["全面","ぜんめん","မျက်နှာပြင်တစ်ခုလုံး"],["画面","がめん","မျက်နှာပြင်"],["○○方面","○○ほうめん","○○ဘက်သို့"]]},{"k":"普","r":"フ","v":[["普通","ふつう","ပုံမှန် / အမြန်မဟုတ်သောရထား"]]},{"k":"各","r":"カク","v":[["各駅","かくえき","ဘူတာတိုင်း"],["各国","かっこく","နိုင်ငံအသီးသီး"],["各自","かくじ","တစ်ဦးချင်းစီ"]]},{"k":"次","r":"ジ・つぎ","v":[["目次","もくじ","မာတိကာ"],["次回","じかい","နောက်တစ်ကြိမ်"],["次","つぎ","နောက် / နောက်တစ်ခု"]]},{"k":"快","r":"カイ","v":[["快速","かいそく","အမြန်ရထား"]]},{"k":"速","r":"ソク・はや-い","v":[["快速","かいそく","အမြန်ရထား"],["高速道路","こうそくどうろ","အမြန်လမ်းမကြီး"],["速度","そくど","အမြန်နှုန်း"],["速い","はやい","မြန်သော"]]},{"k":"過","r":"カ・す-ぎる","v":[["通過","つうか","ဖြတ်သန်းခြင်း"],["過去","かこ","အတိတ်"],["過ぎる","すぎる","ကျော်လွန်သည်"]]},{"k":"鉄","r":"てつ","v":[["地下鉄","ちかてつ","မြေအောက်ရထား"],["鉄道","てつどう","ရထားလမ်း"],["鉄","てつ","သံ / သံမဏိ"]]}]},{"day":5,"title":"5日目","kanji":[{"k":"指","r":"シ・ゆび","v":[["指定","してい","သတ်မှတ်ခြင်း"],["指定席","していせき","ကြိုတင်သတ်မှတ်ထားသောထိုင်ခုံ"],["指","ゆび","လက်ချောင်း"],["指輪","ゆびわ","လက်စွပ်"]]},{"k":"定","r":"テイ","v":[["定休日","ていきゅうび","ပုံမှန်ပိတ်ရက်"],["安定","あんてい","တည်ငြိမ်မှု"],["不安定","ふあんてい","မတည်ငြိမ်သော"]]},{"k":"席","r":"セキ","v":[["席","せき","ထိုင်ခုံ / နေရာ"],["出席","しゅっせき","တက်ရောက်ခြင်း"],["欠席","けっせき","ပျက်ကွက်ခြင်း"]]},{"k":"由","r":"ユウ","v":[["自由な","じゆうな","လွတ်လပ်သော"],["自由席","じゆうせき","သတ်မှတ်ထားခြင်းမရှိသောထိုင်ခုံ"],["理由","りゆう","အကြောင်းပြချက်"]]},{"k":"番","r":"バン","v":[["番号","ばんごう","နံပါတ်"],["～番","～ばん","～နံပါတ်"],["～番線","～ばんせん","～ရထားလိုင်းနံပါတ်"]]},{"k":"窓","r":"まど","v":[["窓","まど","ပြတင်းပေါက်"],["窓口","まどぐち","ကောင်တာ / ဝန်ဆောင်မှုပြတင်းပေါက်"]]},{"k":"側","r":"かわ","v":[["両側","りょうがわ","နှစ်ဘက်စလုံး"],["窓側","まどがわ","ပြတင်းပေါက်ဘက်"],["右側","みぎがわ","ညာဘက်"]]},{"k":"路","r":"ロ","v":[["通路","つうろ","လမ်းကြောင်း / လျှောက်လမ်း"],["道路","どうろ","လမ်းမ"],["線路","せんろ","ရထားလမ်း"]]}]},{"day":6,"title":"6日目 — バス","kanji":[{"k":"停","r":"テイ","v":[["停車","ていしゃ","ယာဉ်ရပ်ခြင်း"],["バス停","バスてい","ဘတ်စ်ကားမှတ်တိုင်"]]},{"k":"整","r":"セイ","v":[["整理","せいり","ရှင်းလင်းစီစဉ်ခြင်း"],["整理券","せいりけん","နံပါတ်လက်မှတ်"]]},{"k":"券","r":"ケン","v":[["整理券","せいりけん","နံပါတ်လက်မှတ်"],["駐車券","ちゅうしゃけん","ကားရပ်ခွင့်လက်မှတ်"],["乗車券","じょうしゃけん","ရထား/ယာဉ်စီးလက်မှတ်"],["回数券","かいすうけん","အကြိမ်ရေများစွာသုံးနိုင်သောလက်မှတ်"]]},{"k":"現","r":"ゲン・あらわ-れる","v":[["現金","げんきん","ငွေသား"],["表現","ひょうげん","ဖော်ပြချက် / ဖော်ပြခြင်း"],["現れる","あらわれる","ပေါ်လာသည်"]]},{"k":"両","r":"リョウ","v":[["両親","りょうしん","မိဘနှစ်ပါး"],["～両","～りょう","နှစ်ဖက်လုံး / နှစ်ခု"]]},{"k":"替","r":"か-える","v":[["取り替える","とりかえる","လဲလှယ်သည်"],["両替","りょうがえ","ငွေလဲလှယ်ခြင်း"],["着替える","きがえる","အဝတ်လဲသည်"]]},{"k":"優","r":"ユウ・やさ-しい","v":[["優先席","ゆうせんせき","ဦးစားပေးထိုင်ခုံ"],["女優","じょゆう","မင်းသမီး"],["優しい","やさしい","ကြင်နာသော"]]},{"k":"座","r":"ザ・すわ-る","v":[["座席","ざせき","ထိုင်ခုံ"],["正座","せいざ","ဒူးထောက်ထိုင်ခြင်း"],["座る","すわる","ထိုင်သည်"]]},{"k":"降","r":"コウ・お-りる・ふ-る","v":[["降車口","こうしゃぐち","ဆင်းရန်ပေါက်"],["以降","いこう","ထိုအချိန်မှစ၍ / ထိုနောက်ပိုင်း"],["降りる","おりる","ဆင်းသည်"],["降る","ふる","ရွာသည်"]]}]},{"day":7,"title":"7日目 — 実戦問題 / Quiz ①","kanji":[{"k":"未","r":"ミ","v":[["未定","みてい","မသတ်မှတ်ရသေးသော"],["未来","みらい","အနာဂတ်"],["～未満","～みまん","～မပြည့်မီ"]]},{"k":"末","r":"マツ","v":[["週末","しゅうまつ","အပတ်ကုန်"],["月末","げつまつ","လကုန်"],["年末","ねんまつ","နှစ်ကုန်"]]},{"k":"若","r":"わか-い","v":[["若い","わかい","ငယ်ရွယ်သော"]]},{"k":"晩","r":"バン","v":[["晩","ばん","ည"],["今晩","こんばん","ဒီည"],["晩ご飯","ばんごはん","ညစာ"],["毎晩","まいばん","ညတိုင်း"]]},{"k":"島","r":"トウ・しま","v":[["○○島","○○とう","○○ကျွန်း"],["島","しま","ကျွန်း"]]},{"k":"皿","r":"さら","v":[["皿","さら","ပန်းကန်"]]},{"k":"血","r":"ケツ・ち","v":[["出血","しゅっけつ","သွေးထွက်ခြင်း"],["血","ち","သွေး"]]},{"k":"助","r":"ジョ・たす-ける","v":[["救助","きゅうじょ","ကယ်ဆယ်ခြင်း"],["助ける","たすける","ကူညီသည် / ကယ်တင်သည်"]]}]}];
+let day=1, cards=[], idx=0, revealed=false, order=[];
+const state=JSON.parse(localStorage.getItem("somatomeN3Week1")||"{}");
+const $=id=>document.getElementById(id);
+const hiraToRoma = s => s.replace(/[ぁ-ゖー]/g, c => ({
+"あ":"a","い":"i","う":"u","え":"e","お":"o","か":"ka","き":"ki","く":"ku","け":"ke","こ":"ko","さ":"sa","し":"shi","す":"su","せ":"se","そ":"so","た":"ta","ち":"chi","つ":"tsu","て":"te","と":"to","な":"na","に":"ni","ぬ":"nu","ね":"ne","の":"no","は":"ha","ひ":"hi","ふ":"fu","へ":"he","ほ":"ho","ま":"ma","み":"mi","む":"mu","め":"me","も":"mo","や":"ya","ゆ":"yu","よ":"yo","ら":"ra","り":"ri","る":"ru","れ":"re","ろ":"ro","わ":"wa","を":"wo","ん":"n","が":"ga","ぎ":"gi","ぐ":"gu","げ":"ge","ご":"go","ざ":"za","じ":"ji","ず":"zu","ぜ":"ze","ぞ":"zo","だ":"da","ぢ":"ji","づ":"zu","で":"de","ど":"do","ば":"ba","び":"bi","ぶ":"bu","べ":"be","ぼ":"bo","ぱ":"pa","ぴ":"pi","ぷ":"pu","ぺ":"pe","ぽ":"po","ゃ":"ya","ゅ":"yu","ょ":"yo","っ":""
+}[c]||c));
+function save(){localStorage.setItem("somatomeN3Week1",JSON.stringify(state))}
+function key(){return day+"-"+cards[idx].k}
+function setupDays(){DATA.forEach(d=>$("day").insertAdjacentHTML("beforeend",`<option value="${d.day}">${d.title}</option>`));$("day").value=day}
+function loadDay(d){day=+d; const src=DATA.find(x=>x.day===day); cards=[...src.kanji]; order=cards.map((_,i)=>i); idx=0; revealed=false; render()}
+function render(){
+ const c=cards[order[idx]??idx], d=DATA.find(x=>x.day===day);
+ $("dayTitle").textContent=d.title; $("kanji").textContent=c.k; $("reading").textContent="";
+ $("pos").textContent=`${idx+1} / ${cards.length}`; $("bar").style.width=((idx+1)/cards.length*100)+"%";
+ const readings=c.r.split("・");
+  const onyomi=readings.filter(x=>/[ァ-ヶ]/.test(x)).join("・")||"—";
+  const kunyomi=readings.filter(x=>/[ぁ-ゖ]/.test(x)).join("・")||"—";
+  const readingBox=`<div class="readingBox"><div><b>音読み (On'yomi)</b><span>${onyomi}</span></div><div><b>訓読み (Kun'yomi)</b><span>${kunyomi}</span></div></div>`;
+  $("answer").innerHTML=readingBox+c.v.map(v=>`<div class="vocab"><span class="jp">${v[0]}</span><span class="romaji">${hiraToRoma(v[1])}</span><div class="my">${v[2]}</div></div>`).join("");
+ $("answer").classList.toggle("hidden",!revealed); $("prompt").classList.toggle("hidden",revealed);
+ $("reveal").classList.toggle("hidden",revealed); $("know").classList.toggle("hidden",!revealed); $("again").classList.toggle("hidden",!revealed);
+ updateStats();
+}
+function mark(ok){state[key()]=ok?"known":"review";save();next()}
+function next(){idx=(idx+1)%cards.length;revealed=false;render()}
+function prev(){idx=(idx-1+cards.length)%cards.length;revealed=false;render()}
+function updateStats(){
+ let k=0,r=0; Object.entries(state).forEach(([x,v])=>{if(x.startsWith(day+"-")) v==="known"?k++:r++});
+ $("known").textContent=k;$("review").textContent=r;
+}
+$("day").onchange=e=>loadDay(e.target.value);
+$("reveal").onclick=()=>{revealed=true;render()};
+$("next").onclick=next;$("prev").onclick=prev;
+$("know").onclick=()=>mark(true);$("again").onclick=()=>mark(false);
+$("random").onclick=()=>{idx=Math.floor(Math.random()*cards.length);revealed=false;render()};
+$("shuffle").onclick=()=>{order.sort(()=>Math.random()-.5);idx=0;revealed=false;render()};
+$("reset").onclick=()=>{if(confirm("Reset all Week 1 progress?")){localStorage.removeItem("somatomeN3Week1");location.reload()}};
+document.onkeydown=e=>{if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();$("reveal").click()}else if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();else if(e.key.toLowerCase()==="k"&&revealed)mark(true);else if(e.key.toLowerCase()==="r"&&revealed)mark(false)};
+setupDays();loadDay(1);
+</script>
+</body></html>
