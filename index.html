@@ -34,6 +34,8 @@ button:hover,select:hover{border-color:#514968} button.primary{background:var(--
 kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;background:#161a23}
 .hidden{display:none} .score-good{color:var(--good)} .score-bad{color:var(--bad)}
 @media(max-width:600px){.wrap{padding:16px 12px 35px}.card{min-height:430px;padding:20px 14px}.kanji{font-size:88px}h1{font-size:19px}}
+
+.testPanel{width:min(760px,100%);text-align:left}.testQ{background:#0c1017;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}.testQ h3{margin:0 0 12px;font-size:16px}.choice{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px}.choice.correct{border-color:var(--good);background:#12251b}.choice.wrong{border-color:var(--bad);background:#28161b}.testResult{font-size:20px;font-weight:700;text-align:center;margin:18px 0}.explain{background:#171b25;border-left:3px solid var(--accent);padding:12px 14px;border-radius:8px;margin-top:12px;line-height:1.6}.testControls{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:18px 0}
 </style>
 </head>
 <body>
@@ -44,11 +46,11 @@ kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;paddi
 </header>
 <div class="toolbar">
 <button id="random">🔀 Random</button><button id="shuffle">🔄 Shuffle</button>
-<button id="reset">Reset progress</button>
+<button id="reset">Reset progress</button><button id="kanjiTestBtn">📝 Kanji Test</button><button id="grammarTestBtn">📘 Grammar Test</button>
 </div>
 <div class="stats"><div class="stat" id="pos"></div><div class="stat">Known: <span class="score-good" id="known">0</span></div><div class="stat">Need review: <span class="score-bad" id="review">0</span></div></div>
 <div class="progress"><i id="bar"></i></div>
-<section class="card">
+<section id="testView" class="card hidden"><div class="day" id="testTitle"></div><div class="testPanel"><div class="stats"><div class="stat" id="testPos"></div><div class="stat">Score: <span id="testScore">0</span></div><div class="stat">Pass: <span id="testPass">10</span></div></div><div class="progress"><i id="testBar"></i></div><div id="testContent"></div></div></section><section class="card">
 <div class="day" id="dayTitle"></div><div class="kanji" id="kanji"></div><div class="reading" id="reading"></div>
 <div class="prompt" id="prompt">Think of the readings and meanings, then reveal the answer.</div>
 <div class="answer hidden" id="answer"></div>
@@ -57,7 +59,7 @@ kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;paddi
 <button id="prev">← Previous</button><button class="primary" id="reveal">Show answer</button><button id="next">Next →</button>
 <button id="know" class="hidden">✓ I know</button><button id="again" class="hidden">↻ Review again</button>
 </div>
-<div class="hint">Keyboard: <kbd>Space</kbd> reveal · <kbd>←</kbd>/<kbd>→</kbd> navigate · <kbd>K</kbd> known · <kbd>R</kbd> review</div>
+<div id="testControls" class="testControls hidden"><button id="testReveal">👁 Reveal answer</button><button id="testNext" class="primary">Next question →</button><button id="testFinish">Finish test</button><button id="exitTest">← Back to flashcards</button></div><div class="hint">Keyboard: <kbd>Space</kbd> reveal · <kbd>←</kbd>/<kbd>→</kbd> navigate · <kbd>K</kbd> known · <kbd>R</kbd> review</div>
 </div>
 <script>
 const DATA=[{"day":1,"title":"1日目","kanji":[{"k":"駐","r":"チュウ","v":[["駐車","ちゅうしゃ","ကားရပ်ခြင်း"],["駐車場","ちゅうしゃじょう","ကားရပ်ရန်နေရာ"]]},{"k":"無","r":"ム・な-い","v":[["無休","むきゅう","နားရက်မရှိ"],["無理な","むりな","မဖြစ်နိုင်သော / အလွန်အကျွံ"],["無料","むりょう","အခမဲ့"],["無い","ない","မရှိ"]]},{"k":"満","r":"マン","v":[["満車","まんしゃ","ကားနေရာပြည့်"],["不満な","ふまんな","မကျေနပ်သော"],["満員","まんいん","လူပြည့်"]]},{"k":"向","r":"コウ・む-こう・む-かう・む-き","v":[["方向","ほうこう","ဦးတည်ရာ / အရပ်"],["向かう","むかう","ဦးတည်သွားသည်"],["向こう","むこう","ဟိုဘက် / မျက်နှာချင်းဆိုင်ဘက်"],["○○向き","○○むき","○○အတွက် သင့်တော်သော"]]},{"k":"禁","r":"キン","v":[["禁止","きんし","တားမြစ်ခြင်း"]]},{"k":"関","r":"カン","v":[["関心","かんしん","စိတ်ဝင်စားမှု"],["関する","かんする","ပတ်သက်သည်"]]},{"k":"係","r":"ケイ・かかり","v":[["関係","かんけい","ဆက်နွယ်မှု / ဆက်ဆံရေး"],["係","かかり","တာဝန်ခံ"]]},{"k":"断","r":"ダン・ことわ-る","v":[["無断","むだん","ခွင့်ပြုချက်မရှိဘဲ"],["断る","ことわる","ငြင်းပယ်သည်"],["断水","だんすい","ရေပေးဝေမှု ဖြတ်တောက်ခြင်း"]]}]},{"day":2,"title":"2日目","kanji":[{"k":"横","r":"オウ・よこ","v":[["横断","おうだん","ဖြတ်ကူးခြင်း"],["横断歩道","おうだんほどう","လူကူးမျဉ်းကြား"],["横","よこ","ဘေး / အလျားလိုက်"]]},{"k":"押","r":"お-す・お-さえる","v":[["押す","おす","နှိပ်သည် / ဖိသည်"],["押さえる","おさえる","ဖိထားသည် / ထိန်းချုပ်သည်"],["押し入れ","おしいれ","နံရံကပ်ဗီဒို"]]},{"k":"式","r":"シキ","v":[["押しボタン式","おしボタンしき","ခလုတ်နှိပ်သည့်ပုံစံ"],["入学式","にゅうがくしき","ကျောင်းဝင်အခမ်းအနား"],["数式","すうしき","သင်္ချာဖော်မြူလာ"]]},{"k":"信","r":"シン","v":[["送信","そうしん","ပေးပို့ခြင်း"],["信じる","しんじる","ယုံကြည်သည်"],["自信","じしん","ကိုယ့်ကိုယ်ကို ယုံကြည်မှု"],["信用","しんよう","ယုံကြည်မှု"]]},{"k":"号","r":"ゴウ","v":[["信号","しんごう","မီးပွိုင့်"],["～号車","～ごうしゃ","ရထား/ကားအမှတ်"]]},{"k":"確","r":"カク・たし-か・たし-かめる","v":[["正確な","せいかくな","တိကျသော"],["確かな","たしかな","သေချာသော"],["確かめる","たしかめる","စစ်ဆေးအတည်ပြုသည်"]]},{"k":"認","r":"ニン・みと-める","v":[["確認","かくにん","အတည်ပြုခြင်း / စစ်ဆေးခြင်း"],["認める","みとめる","အသိအမှတ်ပြုသည်"]]},{"k":"飛","r":"ヒ・と-ぶ","v":[["飛行場","ひこうじょう","လေဆိပ် / လေယာဉ်ကွင်း"],["飛ぶ","とぶ","ပျံသည်"]]}]},{"day":3,"title":"3日目","kanji":[{"k":"非","r":"ヒ","v":[["非常","ひじょう","အရေးပေါ်"],["非常に","ひじょうに","အလွန်"],["非常口","ひじょうぐち","အရေးပေါ်ထွက်ပေါက်"]]},{"k":"常","r":"ジョウ","v":[["日常","にちじょう","နေ့စဉ်ဘဝ"],["正常な","せいじょうな","ပုံမှန်ဖြစ်သော"]]},{"k":"階","r":"カイ","v":[["～階","～かい","～ထပ်"]]},{"k":"段","r":"ダン","v":[["階段","かいだん","လှေကား"]]},{"k":"箱","r":"はこ","v":[["箱","はこ","သေတ္တာ / ဘူး"],["ごみ箱","ごみばこ","အမှိုက်ပုံး"]]},{"k":"危","r":"キ・あぶ-ない","v":[["危ない","あぶない","အန္တရာယ်ရှိသော"]]},{"k":"険","r":"ケン","v":[["危険な","きけんな","အန္တရာယ်ရှိသော"]]},{"k":"捨","r":"す-てる","v":[["捨てる","すてる","လွှင့်ပစ်သည်"]]}]},{"day":4,"title":"4日目","kanji":[{"k":"線","r":"セン","v":[["線","せん","မျဉ်း / ရထားလိုင်း"],["～番線","～ばんせん","ရထားစင်နံပါတ်"]]},{"k":"面","r":"メン","v":[["全面","ぜんめん","မျက်နှာပြင်တစ်ခုလုံး"],["画面","がめん","မျက်နှာပြင်"],["○○方面","○○ほうめん","○○ဘက်သို့"]]},{"k":"普","r":"フ","v":[["普通","ふつう","ပုံမှန် / အမြန်မဟုတ်သောရထား"]]},{"k":"各","r":"カク","v":[["各駅","かくえき","ဘူတာတိုင်း"],["各国","かっこく","နိုင်ငံအသီးသီး"],["各自","かくじ","တစ်ဦးချင်းစီ"]]},{"k":"次","r":"ジ・つぎ","v":[["目次","もくじ","မာတိကာ"],["次回","じかい","နောက်တစ်ကြိမ်"],["次","つぎ","နောက် / နောက်တစ်ခု"]]},{"k":"快","r":"カイ","v":[["快速","かいそく","အမြန်ရထား"]]},{"k":"速","r":"ソク・はや-い","v":[["快速","かいそく","အမြန်ရထား"],["高速道路","こうそくどうろ","အမြန်လမ်းမကြီး"],["速度","そくど","အမြန်နှုန်း"],["速い","はやい","မြန်သော"]]},{"k":"過","r":"カ・す-ぎる","v":[["通過","つうか","ဖြတ်သန်းခြင်း"],["過去","かこ","အတိတ်"],["過ぎる","すぎる","ကျော်လွန်သည်"]]},{"k":"鉄","r":"てつ","v":[["地下鉄","ちかてつ","မြေအောက်ရထား"],["鉄道","てつどう","ရထားလမ်း"],["鉄","てつ","သံ / သံမဏိ"]]}]},{"day":5,"title":"5日目","kanji":[{"k":"指","r":"シ・ゆび","v":[["指定","してい","သတ်မှတ်ခြင်း"],["指定席","していせき","ကြိုတင်သတ်မှတ်ထားသောထိုင်ခုံ"],["指","ゆび","လက်ချောင်း"],["指輪","ゆびわ","လက်စွပ်"]]},{"k":"定","r":"テイ","v":[["定休日","ていきゅうび","ပုံမှန်ပိတ်ရက်"],["安定","あんてい","တည်ငြိမ်မှု"],["不安定","ふあんてい","မတည်ငြိမ်သော"]]},{"k":"席","r":"セキ","v":[["席","せき","ထိုင်ခုံ / နေရာ"],["出席","しゅっせき","တက်ရောက်ခြင်း"],["欠席","けっせき","ပျက်ကွက်ခြင်း"]]},{"k":"由","r":"ユウ","v":[["自由な","じゆうな","လွတ်လပ်သော"],["自由席","じゆうせき","သတ်မှတ်ထားခြင်းမရှိသောထိုင်ခုံ"],["理由","りゆう","အကြောင်းပြချက်"]]},{"k":"番","r":"バン","v":[["番号","ばんごう","နံပါတ်"],["～番","～ばん","～နံပါတ်"],["～番線","～ばんせん","～ရထားလိုင်းနံပါတ်"]]},{"k":"窓","r":"まど","v":[["窓","まど","ပြတင်းပေါက်"],["窓口","まどぐち","ကောင်တာ / ဝန်ဆောင်မှုပြတင်းပေါက်"]]},{"k":"側","r":"かわ","v":[["両側","りょうがわ","နှစ်ဘက်စလုံး"],["窓側","まどがわ","ပြတင်းပေါက်ဘက်"],["右側","みぎがわ","ညာဘက်"]]},{"k":"路","r":"ロ","v":[["通路","つうろ","လမ်းကြောင်း / လျှောက်လမ်း"],["道路","どうろ","လမ်းမ"],["線路","せんろ","ရထားလမ်း"]]}]},{"day":6,"title":"6日目 — バス","kanji":[{"k":"停","r":"テイ","v":[["停車","ていしゃ","ယာဉ်ရပ်ခြင်း"],["バス停","バスてい","ဘတ်စ်ကားမှတ်တိုင်"]]},{"k":"整","r":"セイ","v":[["整理","せいり","ရှင်းလင်းစီစဉ်ခြင်း"],["整理券","せいりけん","နံပါတ်လက်မှတ်"]]},{"k":"券","r":"ケン","v":[["整理券","せいりけん","နံပါတ်လက်မှတ်"],["駐車券","ちゅうしゃけん","ကားရပ်ခွင့်လက်မှတ်"],["乗車券","じょうしゃけん","ရထား/ယာဉ်စီးလက်မှတ်"],["回数券","かいすうけん","အကြိမ်ရေများစွာသုံးနိုင်သောလက်မှတ်"]]},{"k":"現","r":"ゲン・あらわ-れる","v":[["現金","げんきん","ငွေသား"],["表現","ひょうげん","ဖော်ပြချက် / ဖော်ပြခြင်း"],["現れる","あらわれる","ပေါ်လာသည်"]]},{"k":"両","r":"リョウ","v":[["両親","りょうしん","မိဘနှစ်ပါး"],["～両","～りょう","နှစ်ဖက်လုံး / နှစ်ခု"]]},{"k":"替","r":"か-える","v":[["取り替える","とりかえる","လဲလှယ်သည်"],["両替","りょうがえ","ငွေလဲလှယ်ခြင်း"],["着替える","きがえる","အဝတ်လဲသည်"]]},{"k":"優","r":"ユウ・やさ-しい","v":[["優先席","ゆうせんせき","ဦးစားပေးထိုင်ခုံ"],["女優","じょゆう","မင်းသမီး"],["優しい","やさしい","ကြင်နာသော"]]},{"k":"座","r":"ザ・すわ-る","v":[["座席","ざせき","ထိုင်ခုံ"],["正座","せいざ","ဒူးထောက်ထိုင်ခြင်း"],["座る","すわる","ထိုင်သည်"]]},{"k":"降","r":"コウ・お-りる・ふ-る","v":[["降車口","こうしゃぐち","ဆင်းရန်ပေါက်"],["以降","いこう","ထိုအချိန်မှစ၍ / ထိုနောက်ပိုင်း"],["降りる","おりる","ဆင်းသည်"],["降る","ふる","ရွာသည်"]]}]},{"day":7,"title":"7日目 — 実戦問題 / Quiz ①","kanji":[{"k":"未","r":"ミ","v":[["未定","みてい","မသတ်မှတ်ရသေးသော"],["未来","みらい","အနာဂတ်"],["～未満","～みまん","～မပြည့်မီ"]]},{"k":"末","r":"マツ","v":[["週末","しゅうまつ","အပတ်ကုန်"],["月末","げつまつ","လကုန်"],["年末","ねんまつ","နှစ်ကုန်"]]},{"k":"若","r":"わか-い","v":[["若い","わかい","ငယ်ရွယ်သော"]]},{"k":"晩","r":"バン","v":[["晩","ばん","ည"],["今晩","こんばん","ဒီည"],["晩ご飯","ばんごはん","ညစာ"],["毎晩","まいばん","ညတိုင်း"]]},{"k":"島","r":"トウ・しま","v":[["○○島","○○とう","○○ကျွန်း"],["島","しま","ကျွန်း"]]},{"k":"皿","r":"さら","v":[["皿","さら","ပန်းကန်"]]},{"k":"血","r":"ケツ・ち","v":[["出血","しゅっけつ","သွေးထွက်ခြင်း"],["血","ち","သွေး"]]},{"k":"助","r":"ジョ・たす-ける","v":[["救助","きゅうじょ","ကယ်ဆယ်ခြင်း"],["助ける","たすける","ကူညီသည် / ကယ်တင်သည်"]]}]}];
@@ -99,6 +101,49 @@ $("random").onclick=()=>{idx=Math.floor(Math.random()*cards.length);revealed=fal
 $("shuffle").onclick=()=>{order.sort(()=>Math.random()-.5);idx=0;revealed=false;render()};
 $("reset").onclick=()=>{if(confirm("Reset all Week 1 progress?")){localStorage.removeItem("somatomeN3Week1");location.reload()}};
 document.onkeydown=e=>{if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();$("reveal").click()}else if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();else if(e.key.toLowerCase()==="k"&&revealed)mark(true);else if(e.key.toLowerCase()==="r"&&revealed)mark(false)};
+
+/* Test mode */
+const GRAMMAR=[
+["日本にいる（　　）、日本語をたくさん話したいです。",["うちに","たびに","ついでに","ところに"],0,"～うちに：ある状態が変わらない間に何かをする。"],
+["母が料理をしている（　　）、私はテレビを見ていた。",["うちに","間","たびに","ために"],1,"～間：その時間ずっと続いていることを表す。"],
+["この薬を飲んでからでないと、車を（　　）。",["運転してはいけません","運転したいです","運転するそうです","運転できました"],0,"～てからでないと：～した後でなければ、という条件。"],
+["今から映画が始まる（　　）です。",["うち","ところ","間","たび"],1,"～ところだ：これから起こる直前の状態。"],
+["説明書に書いてある（　　）に、やってください。",["たび","ついで","とおり","ほど"],2,"～とおりに：書かれている内容と同じようにする。"],
+["人（　　）考え方が違います。",["によって","たびに","ついでに","とおりに"],0,"～によって：人・場合などによって違いがある。"],
+["旅行する（　　）、写真をたくさん撮ります。",["たびに","ついでに","ほど","とおり"],0,"～たびに：同じことが起こるたびに。"],
+["駅に行く（　　）、コンビニにも寄りました。",["たびに","ついでに","ほど","によって"],1,"～ついでに：ある行動をする機会を利用して別のこともする。"],
+["この町（　　）住みやすい町はありません。",["くらい","ほど","ついでに","ため"],1,"～ほど～はない：比較して最高であることを表す。"],
+["夏はやっぱり海（　　）。",["に限る","ほどだ","ばかりだ","たびだ"],0,"～に限る：それが一番いい、という強い評価。"],
+["これ（　　）簡単な問題はありません。",["くらい","たびに","ついでに","によって"],0,"～くらい～はない：これほど～なものはない。"],
+["電車で行く（　　）、歩いて行ったほうがいい。",["くらいなら","おかげで","たびに","とおり"],0,"～くらいなら：AよりBのほうがよい、という選択。"],
+["兄は外で遊ぶのが好きなの（　　）、弟は家でゲームをするのが好きだ。",["に対して","おかげで","たびに","ために"],0,"～に対して：二つを対比する。"],
+["この仕事は給料が高い（　　）、とても忙しい。",["反面","ついでに","というより","おかげで"],0,"～反面：ある面とは反対の別の面を示す。"],
+["彼は先生（　　）医者だ。",["というより","に対して","反面","かわりに"],0,"AというよりB：AよりBと表現するほうが適切。"],
+["父の（　　）私が会議に出席します。",["かわりに","反面","というより","対して"],0,"～かわりに：他の人の代わりに行う。"],
+["大雨（　　）、電車が止まった。",["おかげで","せいで","ついでに","たびに"],1,"～せいで：悪い結果の原因。"],
+["毎日練習した（　　）、日本語が上手になりました。",["おかげで","せいで","反面","かわりに"],0,"～おかげで：よい結果につながった原因。"],
+["事故（　　）、道が通れなくなった。",["によって","おかげで","ついでに","たびに"],0,"～によって：出来事などが原因となったことを表す。"],
+["健康の（　　）、毎日運動しています。",["ために","せいで","反面","ついでに"],0,"～ために：目的・理由を表す。"]
+];
+let testMode=null,testQs=[],testIdx=0,testScore=0,testAnswered=false;
+function makeKanjiTest(){
+ const all=DATA.flatMap(d=>d.kanji.map(c=>({c,d}))),qs=[];
+ for(let i=0;i<15;i++){const x=all[Math.floor(Math.random()*all.length)],c=x.c,m=Math.floor(Math.random()*3);
+ let q,opts,ans;
+ if(m===0){ans=c.r.split("・")[0];opts=[ans];while(opts.length<4){let z=all[Math.floor(Math.random()*all.length)].c.r.split("・")[0];if(!opts.includes(z))opts.push(z)}q=`「${c.k}」の読み方として正しいものはどれですか。`}
+ else if(m===1){let v=c.v[Math.floor(Math.random()*c.v.length)];ans=v[1];opts=[ans];while(opts.length<4){let z=all[Math.floor(Math.random()*all.length)].c.v[0][1];if(!opts.includes(z))opts.push(z)}q=`「${v[0]}」の読み方はどれですか。`}
+ else {let v=c.v[Math.floor(Math.random()*c.v.length)];ans=v[0];opts=[ans];while(opts.length<4){let z=all[Math.floor(Math.random()*all.length)].c.v[0][0];if(!opts.includes(z))opts.push(z)}q=`「${v[1]}」を漢字で書くとどれですか。`}
+ opts.sort(()=>Math.random()-.5);qs.push({q,opts,ans:opts.indexOf(ans),exp:`${c.k}：${c.r}<br>${c.v.map(v=>`${v[0]} → ${v[1]}（${hiraToRoma(v[1])}）｜${v[2]}`).join("<br>")}`})}
+ return qs;
+}
+function enterTest(type){testMode=type;testQs=type==="kanji"?makeKanjiTest():GRAMMAR.map(x=>({q:x[0],opts:x[1],ans:x[2],exp:x[3]})).sort(()=>Math.random()-.5).slice(0,15);testIdx=0;testScore=0;testAnswered=false;$("testView").classList.remove("hidden");$("testControls").classList.remove("hidden");document.querySelector(".card:not(#testView)").classList.add("hidden");document.querySelector(".controls:not(#testControls)").classList.add("hidden");renderTest()}
+function renderTest(){if(testIdx>=testQs.length)return showTestResult();let q=testQs[testIdx];$("testTitle").textContent=(testMode==="kanji"?"漢字 Test":"文法 Test")+" · Question "+(testIdx+1)+" / "+testQs.length;$("testPos").textContent=`${testIdx+1} / ${testQs.length}`;$("testScore").textContent=testScore;$("testBar").style.width=(testIdx/testQs.length*100)+"%";$("testContent").innerHTML=`<div class="testQ"><h3>${q.q}</h3>${q.opts.map((o,i)=>`<button class="choice" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}<div id="testFeedback"></div></div>`;document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>chooseTest(+b.dataset.i));$("testNext").disabled=true;testAnswered=false}
+function chooseTest(i){if(testAnswered)return;testAnswered=true;let q=testQs[testIdx],bs=[...document.querySelectorAll(".choice")];bs[q.ans].classList.add("correct");if(i!==q.ans)bs[i].classList.add("wrong");else testScore++;$("testScore").textContent=testScore;$("testFeedback").innerHTML=`<div class="explain"><b>${i===q.ans?"✓ Correct":"✗ Wrong"}</b><br><b>Answer:</b> ${q.opts[q.ans]}<br>${q.exp}</div>`;$("testNext").disabled=false}
+$("testReveal").onclick=()=>{if(testAnswered)return;let q=testQs[testIdx];testAnswered=true;document.querySelectorAll(".choice")[q.ans].classList.add("correct");$("testFeedback").innerHTML=`<div class="explain"><b>Answer:</b> ${q.opts[q.ans]}<br>${q.exp}</div>`;$("testNext").disabled=false}
+$("testNext").onclick=()=>{testIdx++;renderTest()};$("testFinish").onclick=showTestResult;
+function showTestResult(){$("testTitle").textContent=(testMode==="kanji"?"漢字 Test":"文法 Test")+" · Result";$("testBar").style.width="100%";$("testContent").innerHTML=`<div class="testResult">${testScore} / ${testQs.length}<br><span class="${testScore>=10?"score-good":"score-bad"}">${testScore>=10?"PASS ✓":"REVIEW NEEDED"}</span></div><div class="explain">${testMode==="kanji"?"Pass point: 10 / 15, based on what your sensei told you.":"Practice pass point: 10 / 15 for now. Your sensei has not given you the grammar scoring rule yet."}</div>`;$("testNext").textContent="Next test";$("testNext").disabled=false;$("testNext").onclick=()=>enterTest(testMode)}
+$("exitTest").onclick=()=>{testView.classList.add("hidden");testControls.classList.add("hidden");document.querySelector(".card:not(#testView)").classList.remove("hidden");document.querySelector(".controls:not(#testControls)").classList.remove("hidden");render()};
+$("kanjiTestBtn").onclick=()=>enterTest("kanji");$("grammarTestBtn").onclick=()=>enterTest("grammar");
 setupDays();loadDay(1);
 </script>
 </body></html>
