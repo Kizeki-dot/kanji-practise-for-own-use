@@ -1357,7 +1357,7 @@
           (testMode === "kanji" ? "漢字 Test" : "文法 Test") + " · Result";
         $("testBar").style.width = "100%";
         $("testContent").innerHTML =
-          `<div class="testResult">${testScore} / ${testQs.length}<br><span class="${testScore >= 10 ? "score-good" : "score-bad"}">${testScore >= 10 ? "PASS ✓" : "REVIEW NEEDED"}</span></div><div class="explain">${testMode === "kanji" ? "Pass point: 10 / 15." : "Practice pass point: 10 / 15 for now. Sensei has not given the grammar scoring rule yet."}</div>`;
+          `<div class="testResult">${testScore} / ${testQs.length}<br><span class="${testScore >= 10 ? "score-good" : "score-bad"}">${testScore >= 10 ? "PASS ✓" : "REVIEW NEEDED"}</span></div><div class="explain">${testMode === "kanji" ? "Pass point is: 10 / 15." : "Practice pass point is: 10 / 15 for now. Sensei has not given the grammar scoring rule yet."}</div>`;
         $("testNext").textContent = "Next test";
         $("testNext").disabled = false;
         $("testNext").onclick = () => enterTest(testMode);
